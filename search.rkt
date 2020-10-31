@@ -1,5 +1,6 @@
 #lang rosette
 
-(define-symbolic x integer?)
-(define sol (solve (assert (member x (list 1 2 3)))))
+(define-symbolic x y integer?)
+(define sol (solve (assert (member (list x y) (list (list 1 2) (list 2 3))))))
 (evaluate x sol)
+(evaluate y sol)
