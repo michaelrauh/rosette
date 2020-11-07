@@ -12,4 +12,5 @@
                      (assert (member (list b d) example-sliding))
                      (assert (not (equal? b c))))))
 
-(evaluate (list (list a b) (list c d)) sol)
+(define answer (evaluate (list a b c d) sol))
+(convert-back answer)

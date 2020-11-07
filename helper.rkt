@@ -10,10 +10,8 @@
 (define tokenized (string-split example-string))
 (define unique (remove-duplicates tokenized))
 (define numbers (range (length unique)))
-(define assocs (map (lambda (x y) (cons x y)) numbers unique))
-(define rev-assocs (map (lambda (x y) (cons y x)) numbers unique))
-(define corr (make-immutable-hash assocs))
-(define rev-corr (make-immutable-hash rev-assocs))
+(define corr (make-immutable-hash (map (lambda (x y) (cons x y)) numbers unique)))
+(define rev-corr (make-immutable-hash (map (lambda (x y) (cons y x)) numbers unique)))
 (define example (map (lambda (x) (hash-ref rev-corr x)) tokenized))
 
 (define example-sliding (build-sliding example))
@@ -21,4 +19,8 @@
 (define (make-example-sliding)
   example-sliding)
 
+(define (convert-back xs)
+  (map (lambda (x) (hash-ref corr x)) xs))
+
 (provide make-example-sliding)
+(provide convert-back)
