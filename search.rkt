@@ -4,7 +4,6 @@
 
 (define example-sliding (make-example-sliding))
 (define-symbolic a b c d integer?)
-(define xs (list a b))
 (define sol (solve (begin
                      (assert (member (list a b) example-sliding))
                      (assert (member (list c d) example-sliding))
