@@ -1,12 +1,12 @@
 #lang racket
-
+(require 2htdp/batch-io)
 
 (define (build-sliding xs)
   (cond
     [(< (length xs) 2) (list)]
     [else (cons (take xs 2) (build-sliding (drop xs 1)))]))
 
-(define example-string "a b c d a c b d")
+(define example-string (read-file "example.txt"))
 (define tokenized (string-split example-string))
 (define unique (remove-duplicates tokenized))
 (define numbers (range (length unique)))
