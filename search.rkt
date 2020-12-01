@@ -1,6 +1,7 @@
 #lang rosette/safe
 
 (require "helper.rkt")
+(require "tree.rkt")
 
 (define example-sliding (make-example-sliding))
 (define-symbolic a b c d integer?)

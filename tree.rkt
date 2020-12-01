@@ -41,19 +41,51 @@
   (check-equal? (list 3) (second-half (list 1 2 3)))
   (check-equal? (list 4) (second-half (list 1 2 3 4))))
 
+(module+ test
+  (require rackunit)
+  (check-equal? null (flatten (list (first-half null) (middle null) (second-half null))))
+  (check-equal? (list 1) (flatten (list (first-half (list 1)) (middle (list 1)) (second-half (list 1)))))
+  (check-equal? (list 1 2) (flatten (list (first-half (list 1 2)) (middle (list 1 2)) (second-half (list 1 2)))))
+  (check-equal? (list 1 2 3) (flatten (list (first-half (list 1 2 3)) (middle (list 1 2 3)) (second-half (list 1 2 3)))))
+  (check-equal? (list 1 2 3 4) (flatten (list (first-half (list 1 2 3 4)) (middle (list 1 2 3 4)) (second-half (list 1 2 3 4))))))
+  
+
+(define (from-sorted-list l)
+  (cond [(empty? l) null]
+        [else (tree (from-sorted-list (first-half l)) (middle l) (from-sorted-list (second-half l)))]))
 
 (module+ test
   (require rackunit)
-  (check-equal? null (flatten (list (first-half null) (middle null) (second-half null)))))
+  (check-equal? (tree null 1 null) (from-sorted-list (list 1)))
+  (check-equal? (tree (tree null 1 null) 2 null) (from-sorted-list (list 1 2)))
+  (check-equal? (tree (tree null 1 null) 2 (tree null 3 null)) (from-sorted-list (list 1 2 3))))
 
-;(define (from-sorted-list l)
-;  (cond [(= (length l) 1) (tree null (car l) null)]
-;        [(= (length l) 2) (tree (tree null (car l) null) (second l) null)]
-;        [(= (length l) 3) (tree (tree null (car l) null) (second l) (tree null (third l) null))]
-;        [else (tree (from-sorted-list (first-half l)) (middle l) (from-sorted-list (second-half l)))]))
-;
-;(module+ test
-;  (require rackunit)
-;  (check-equal? (tree null 1 null) (from-sorted-list (list 1)))
-;  (check-equal? (tree (tree null 1 null) 2 null) (from-sorted-list (list 1 2)))
-;  (check-equal? (tree (tree null 1 null) 2 (tree null 3 null)) (from-sorted-list (list 1 2 3))))
+(define (from-list l)
+  (from-sorted-list (sort (remove-duplicates l) <)))
+
+(module+ test
+  (require rackunit)
+  (check-equal? (tree (tree null 1 null) 2 (tree null 3 null)) (from-list (list 3 3 2 1))))
+
+(define (member? t x)
+  (cond [(empty? t) false]
+        [(= x (tree-data t)) true]
+        [(< x (tree-data t)) (member? (tree-left t) x)]
+        [(> x (tree-data t)) (member? (tree-right t) x)]))
+
+; TODO either allow member? to search trees of lists or start expecting trees of reals.
+
+(module+ test
+  (require rackunit)
+  (check-false (member? null 5))
+  (check-true (member? (tree null 5 null) 5))
+  (check-true (member? (tree (tree null 1 null) 2 (tree null 3 null)) 1))
+  (check-true (member? (tree (tree null 1 null) 2 (tree null 3 null)) 3)))
+
+(module+ test
+  (require rackunit)
+  (check-true (member? (from-list (list 7 8 2 0 3 1 2)) 1))
+  (check-false (member? (from-list (list 7 8 2 0 3 2)) 1)))
+
+(provide from-list)
+(provide member?)

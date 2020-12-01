@@ -1,5 +1,6 @@
 #lang racket
 (require 2htdp/batch-io)
+(require "tree.rkt")
 
 (define (build-sliding xs)
   (cond
