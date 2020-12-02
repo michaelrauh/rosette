@@ -27,7 +27,6 @@
   (check-equal? 2 (middle (list 1 2 3)))
   (check-equal? 3 (middle (list 1 2 3 4))))
 
-
 (define (second-half l)
   (define middle-index (+ 1 (floor (/ (length l) 2))))
   (cond [(< (length l) 2) null]
@@ -60,32 +59,30 @@
   (check-equal? (tree (tree null 1 null) 2 null) (from-sorted-list (list 1 2)))
   (check-equal? (tree (tree null 1 null) 2 (tree null 3 null)) (from-sorted-list (list 1 2 3))))
 
-(define (from-list l)
-  (from-sorted-list (sort (remove-duplicates l) <)))
+(define (from-list l less-than)
+  (from-sorted-list (sort (remove-duplicates l) less-than)))
 
 (module+ test
   (require rackunit)
-  (check-equal? (tree (tree null 1 null) 2 (tree null 3 null)) (from-list (list 3 3 2 1))))
+  (check-equal? (tree (tree null 1 null) 2 (tree null 3 null)) (from-list (list 3 3 2 1) <)))
 
-(define (member? t x)
+(define (member? less-than t x)
   (cond [(empty? t) false]
-        [(= x (tree-data t)) true]
-        [(< x (tree-data t)) (member? (tree-left t) x)]
-        [(> x (tree-data t)) (member? (tree-right t) x)]))
-
-; TODO either allow member? to search trees of lists or start expecting trees of reals.
+        [(equal? x (tree-data t)) true]
+        [(less-than x (tree-data t)) (member? less-than (tree-left t) x)]
+        [else (member? less-than (tree-right t) x)]))
 
 (module+ test
   (require rackunit)
-  (check-false (member? null 5))
-  (check-true (member? (tree null 5 null) 5))
-  (check-true (member? (tree (tree null 1 null) 2 (tree null 3 null)) 1))
-  (check-true (member? (tree (tree null 1 null) 2 (tree null 3 null)) 3)))
+  (check-false (member? < null 5))
+  (check-true (member? < (tree null 5 null) 5))
+  (check-true (member? < (tree (tree null 1 null) 2 (tree null 3 null)) 1))
+  (check-true (member? < (tree (tree null 1 null) 2 (tree null 3 null)) 3)))
 
 (module+ test
   (require rackunit)
-  (check-true (member? (from-list (list 7 8 2 0 3 1 2)) 1))
-  (check-false (member? (from-list (list 7 8 2 0 3 2)) 1)))
+  (check-true (member? < (from-list (list 7 8 2 0 3 1 2) <) 1))
+  (check-false (member? < (from-list (list 7 8 2 0 3 2) <) 1)))
 
 (provide from-list)
 (provide member?)
