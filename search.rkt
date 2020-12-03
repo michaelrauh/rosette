@@ -1,4 +1,4 @@
-#lang rosette/safe
+#lang rosette
 
 (struct tree (left data right) #:transparent)
 
@@ -52,12 +52,13 @@
   (member? list-less-than t x))
 
 (define-symbolic a b c d integer?)
-(define sol (solve (begin
-                     (assert (tree-member? (list a b) example-sliding))
-                     (assert (tree-member? (list c d) example-sliding))
-                     (assert (tree-member? (list a c) example-sliding))
-                     (assert (tree-member? (list b d) example-sliding))
-                     (assert (not (equal? b c))))))
+
+(define (check l)
+  (for-each (λ (x) (assert (tree-member? x l))) (list (list a b) (list c d) (list a c) (list b d)))
+  (for-each (λ (x) (assert (not (equal? (car x) (second x))))) (list (list b c))))
+
+
+(define sol (solve (check example-sliding)))
 
 (define answer (evaluate (list a b c d) sol))
 answer
