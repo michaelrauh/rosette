@@ -38,14 +38,16 @@
         [(not (equal? (car x) (car y))) (< (car x) (car y))]
         [else (list-less-than (cdr x) (cdr y))]))
 
-(define (build-sliding xs)
+(define (build-sliding xs window)
   (cond
-    [(< (length xs) 3) (list)]
-    [else (cons (take xs 3) (build-sliding (drop xs 1)))]))
+    [(< (length xs) window) (list)]
+    [else (cons (take xs window) (build-sliding (drop xs 1) window))]))
 
-(define example-sliding (from-list (build-sliding example) list-less-than))
+
+
+(define (build-example-sliding window) (from-list (build-sliding example window) list-less-than))
 
 (define (tree-member? x t)
   (member? list-less-than t x))
 
-(provide tree-member? example-sliding)
+(provide tree-member? build-example-sliding)
