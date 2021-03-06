@@ -12,23 +12,3 @@
 
 (define answer (evaluate (list a b c d e f) sol))
 (convert-back answer)
-
-(define dims (list 4 3 2))
-
-(define (conv-dims dims point acc)
-  (if (= (length dims) point) acc
-  (conv-dims dims (+ 1 point) (cons (make-conv dims point) acc))))
-
-(define (remove-nth lst n)
-  (let-values ([(left right) (split-at lst n)])
-    (append left (rest right))))
-
-(define (make-conv dims point)
-  (define new-head (list-ref dims point))
-  (define new-tail (remove-nth dims point))
-  (cons new-head new-tail))
-
-(define (conv-all-dims dims)
-  (conv-dims dims 0 null))
-
-(conv-all-dims '(4 3 2))
