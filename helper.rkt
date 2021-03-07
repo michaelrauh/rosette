@@ -16,11 +16,4 @@
 (provide convert-back)
 (provide example)
 
-(define arr (array-reshape (array #['a 'b 'c 'd 'e 'f 'g 'h]) #(2 2 2)))
 
-(define p1 (array-axis-swap arr 1 2))
-(define p2 (array-axis-swap arr 0 2))
-
-(array->list* (array-reshape arr #(4 2)))
-(array->list* (array-reshape p1 #(4 2)))
-(array->list* (array-reshape p2 #(4 2)))
