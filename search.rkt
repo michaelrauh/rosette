@@ -3,12 +3,14 @@
 (require "helper.rkt")
 (require math)
 
+(define dims '(2 2 2))
+
 (define (create-symbol)
  (define-symbolic* x integer?) x)
 
-(define symbols (map (λ (l) (create-symbol)) (range 8)))
+(define symbols (map (λ (l) (create-symbol)) (range (apply * dims))))
 
-(define arr (array-reshape (list->array symbols) #(2 2 2))) ; Replace dims with passed in dims
+(define arr (array-reshape (list->array symbols) (list->vector dims)))
 
 (define p1 (array-axis-swap arr 1 2)) ; investigate how these permutations progress for higher dimensions
 (define p2 (array-axis-swap arr 0 2))
