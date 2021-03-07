@@ -15,14 +15,12 @@
 
 (define ps (map (λ (ax) (array-axis-swap arr ax dimensionality)) (range (+ 1 dimensionality))))
 
-(define a1 (array->list* (array-reshape (list-ref ps 0) #(4 2)))) ; in this case 2 is the length of the target dimension, and 4 is what is left over. This will be different on each line if it's not square.
-(define a2 (array->list* (array-reshape (list-ref ps 1) #(4 2))))
-(define a3 (array->list* (array-reshape (list-ref ps 2) #(4 2))))
+(define as (map (λ (pos) (array->list* (array-reshape (list-ref ps pos) (list->vector (list (/ volume (list-ref dims pos)) (list-ref dims pos))))))  (range (+ 1 dimensionality))))
 
 (define (check l)
-  (for-each (λ (x) (assert (tree-member? x l))) a1)
-  (for-each (λ (x) (assert (tree-member? x l))) a2)
-  (for-each (λ (x) (assert (tree-member? x l))) a3)
+  (for-each (λ (x) (assert (tree-member? x l))) (list-ref as 0))
+  (for-each (λ (x) (assert (tree-member? x l))) (list-ref as 1))
+  (for-each (λ (x) (assert (tree-member? x l))) (list-ref as 2))
   (for-each (λ (x) (assert (not (equal? (first x) (second x))))) (list (list (list-ref symbols 1) (list-ref symbols 2)) (list (list-ref symbols 1) (list-ref symbols 4)) (list (list-ref symbols 3) (list-ref symbols 7)) (list (list-ref symbols 5) (list-ref symbols 7))))) ; calculate this instead of hard code
 (define sol (solve (check (build-example-sliding 2))))
 
