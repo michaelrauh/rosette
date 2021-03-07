@@ -6,10 +6,9 @@
 (define (create-symbol)
  (define-symbolic* x integer?) x)
 
-(define-symbolic a b c d e f g h integer?)
-(define symbols (list a b c d e f g h))
+(define symbols (map (λ (l) (create-symbol)) (range 8)))
 
-(define arr (array-reshape (list->array symbols) #(2 2 2))) ; replace array with n calls to define-symbolic*. Replace dims with passed in dims
+(define arr (array-reshape (list->array symbols) #(2 2 2))) ; Replace dims with passed in dims
 
 (define p1 (array-axis-swap arr 1 2)) ; investigate how these permutations progress for higher dimensions
 (define p2 (array-axis-swap arr 0 2))
@@ -22,7 +21,7 @@
   (for-each (λ (x) (assert (tree-member? x l))) a1)
   (for-each (λ (x) (assert (tree-member? x l))) a2)
   (for-each (λ (x) (assert (tree-member? x l))) a3)
-  (for-each (λ (x) (assert (not (equal? (first x) (second x))))) (list (list b c) (list b e) (list d g) (list f g)))) ; calculate this instead of hard code
+  (for-each (λ (x) (assert (not (equal? (first x) (second x))))) (list (list (list-ref symbols 1) (list-ref symbols 2)) (list (list-ref symbols 1) (list-ref symbols 4)) (list (list-ref symbols 3) (list-ref symbols 7)) (list (list-ref symbols 5) (list-ref symbols 7))))) ; calculate this instead of hard code
 (define sol (solve (check (build-example-sliding 2))))
 
 (define answer (evaluate symbols sol))
