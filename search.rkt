@@ -8,7 +8,7 @@
 (define (create-symbol)
  (define-symbolic* x integer?) x)
 
-(define symbols (map (λ (l) (create-symbol)) (range (apply * dims))))
+(define symbols (map (λ (_) (create-symbol)) (range (apply * dims))))
 
 (define arr (array-reshape (list->array symbols) (list->vector dims)))
 
@@ -27,4 +27,23 @@
 (define sol (solve (check (build-example-sliding 2))))
 
 (define answer (evaluate symbols sol))
-(convert-back answer)
+;(convert-back answer)
+
+
+(define dims2 '(2 2 2 2))
+(define ex (range (apply * dims2)))
+
+(define arr2 (array-reshape (list->array ex) (list->vector dims2)))
+arr2
+
+(array-axis-swap arr2 0 3)
+(array-axis-swap arr2 1 3)
+(array-axis-swap arr2 2 3)
+(array-axis-swap arr2 3 3)
+
+; 0 1   4 5
+; 2 3   6 7
+
+
+; 8  9   12 13
+; 10 11  14 15
