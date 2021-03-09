@@ -1,6 +1,5 @@
 #lang racket
 (require 2htdp/batch-io)
-(require math)
 
 (define example-string (read-file "example.txt"))
 (define tokenized (string-split example-string))

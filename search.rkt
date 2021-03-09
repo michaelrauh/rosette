@@ -3,7 +3,7 @@
 (require "helper.rkt")
 (require math)
 
-(define dims '(2 2 2))
+(define dims '(2 2 4)) ; increase number of dimensions until unsat. Then increase size of last dim until unsat. Then second to last dim and so on until you're out of things to change.
 
 (define (create-symbol)
   (define-symbolic* x integer?) x)
@@ -41,7 +41,7 @@
 
 (define all_orthotope_views (map (λ (ax) (array-axis-swap original_orthotope ax (sub1 dimensionality))) for-dim))
 
-(define phrases (map (λ (pos) (array->list* (array-reshape (list-ref all_orthotope_views pos) (list->vector (list (/ volume (list-ref dims pos)) (list-ref dims pos)))))) for-dim))
+(define phrases (map (λ (pos) (array->list* (array-reshape (list-ref all_orthotope_views pos) (list->vector (list (/ volume (list-ref dims pos)) (list-ref dims pos)))))) for-dim)) ; list-ref dims pos assumes correct order. Make sure.
 
 (define (check)
   (for-each (λ (pos)
