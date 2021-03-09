@@ -5,6 +5,9 @@
 
 (define dims '(2 2 2))
 
+(define (create-symbol)
+  (define-symbolic* x integer?) x)
+
 (define (dist dims)
   (define (make-dist dims offset)
     (define offset-range (range offset (+ offset (car dims))))
@@ -17,29 +20,28 @@
 (define (no-repeats l)
   (eq? l (remove-duplicates l)))
 
-(define (corr all-dists all-symbols acc)
-  (if (empty? all-dists) acc
-      (begin 
-        (define current-symbol (car all-symbols))
-        (define current-dist (car all-dists))
-        (define new-acc (insert-at acc current-dist current-symbol))
-        (corr (cdr all-dists) (cdr all-symbols) new-acc))))
-
-(define dists (flatten (dist dims)))
+(define (get-diags all-dists all-symbols)
+  (define (corr all-dists all-symbols acc)
+    (if (empty? all-dists) acc
+        (begin 
+          (define current-symbol (car all-symbols))
+          (define current-dist (car all-dists))
+          (define new-acc (insert-at acc current-dist current-symbol))
+          (corr (cdr all-dists) (cdr all-symbols) new-acc))))
+  (define empties (make-list (add1 (apply max dists)) '()))
+  (corr all-dists all-symbols empties))
 
 (define (insert-at l loc x)
   (list-set l loc (cons x (list-ref l loc))))
 
-(define (create-symbol)
-  (define-symbolic* x integer?) x)
+(define dists (flatten (dist dims)))
+
 (define volume (apply * dims))
 (define dimensionality (length dims))
 (define symbols (map (λ (_) (create-symbol)) (range volume)))
 (define for-dim (range dimensionality))
 (define highest-axis (sub1 dimensionality))
-
-(define empties (make-list (add1 (apply max dists)) '()))
-(define diagonals (corr dists symbols empties))
+(define diagonals (get-diags dists symbols))
 
 (define original_orthotope (array-reshape (list->array symbols) (list->vector dims)))
 
