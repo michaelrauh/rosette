@@ -16,3 +16,5 @@
 (provide convert-back)
 (provide example)
 (provide range)
+(provide list-set)
+(provide make-list)
