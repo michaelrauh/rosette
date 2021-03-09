@@ -21,18 +21,13 @@
   (eq? l (remove-duplicates l)))
 
 (define (get-diags all-dists all-symbols)
+  (define (insert-at l loc x)
+    (list-set l loc (cons x (list-ref l loc))))
   (define (corr all-dists all-symbols acc)
     (if (empty? all-dists) acc
-        (begin 
-          (define current-symbol (car all-symbols))
-          (define current-dist (car all-dists))
-          (define new-acc (insert-at acc current-dist current-symbol))
-          (corr (cdr all-dists) (cdr all-symbols) new-acc))))
+        (corr (cdr all-dists) (cdr all-symbols) (insert-at acc (car all-dists) (car all-symbols)))))
   (define empties (make-list (add1 (apply max dists)) '()))
   (corr all-dists all-symbols empties))
-
-(define (insert-at l loc x)
-  (list-set l loc (cons x (list-ref l loc))))
 
 (define dists (flatten (dist dims)))
 
@@ -40,12 +35,11 @@
 (define dimensionality (length dims))
 (define symbols (map (λ (_) (create-symbol)) (range volume)))
 (define for-dim (range dimensionality))
-(define highest-axis (sub1 dimensionality))
 (define diagonals (get-diags dists symbols))
 
 (define original_orthotope (array-reshape (list->array symbols) (list->vector dims)))
 
-(define all_orthotope_views (map (λ (ax) (array-axis-swap original_orthotope ax highest-axis)) for-dim))
+(define all_orthotope_views (map (λ (ax) (array-axis-swap original_orthotope ax (sub1 dimensionality))) for-dim))
 
 (define phrases (map (λ (pos) (array->list* (array-reshape (list-ref all_orthotope_views pos) (list->vector (list (/ volume (list-ref dims pos)) (list-ref dims pos)))))) for-dim))
 
@@ -59,4 +53,4 @@
 (define sol (solve (check)))
 
 (define answer (evaluate symbols sol))
-(convert-back answer)
+(array->list* (array-reshape (list->array (convert-back answer)) (list->vector dims)))
