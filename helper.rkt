@@ -17,3 +17,5 @@
 (provide range)
 (provide list-set)
 (provide make-list)
+(provide make-immutable-hash)
+(provide hash-ref)
