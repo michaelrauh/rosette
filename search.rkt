@@ -20,11 +20,12 @@
   (eq? l (remove-duplicates l)))
 
 (define (make-tree-hash dims)
-    (define ks (remove-duplicates dims))
-    (define vs (map (λ (k) (build-example-sliding k)) ks))
-    (make-immutable-hash (map (lambda (x y) (cons x y)) ks vs)))
+  (define ks (remove-duplicates dims))
+  (define vs (map (λ (k) (build-example-sliding k)) ks))
+  (make-immutable-hash (map (lambda (x y) (cons x y)) ks vs)))
 
 (define (search dims)
+  (displayln dims)
   (define trees (make-tree-hash dims))
 
   (define dists (flatten (dist dims)))
@@ -60,7 +61,12 @@
     (for-each (λ (l) (assert (no-repeats l))) diagonals))
   (define sol (solve (check)))
   (if (unsat? sol)
-      #f
-      (array->list* (array-reshape (list->array (convert-back (evaluate symbols sol))) (list->vector dims)))))
-
-(search '(2 2 2))
+      (begin
+        (displayln "search failed")
+        #f)
+      (begin
+        (define ans (array->list* (array-reshape (list->array (convert-back (evaluate symbols sol))) (list->vector dims))))
+        (displayln ans)
+        ans)
+      ))
+(provide search)
