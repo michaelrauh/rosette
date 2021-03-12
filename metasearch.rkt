@@ -1,24 +1,5 @@
 #lang racket
 (require "search.rkt")
-
-(define (find-dimensionality)
-  (define (go dims)
-    (define ans (search dims))
-    (if (not ans)
-        dims
-        (go (cons 2 dims))))
-  (cdr (go '(2 2))))
-
-(define dimensionality (find-dimensionality))
-
-(define (find-shape dims cur jumped)
-  (define failed  (not (search dims)))
-  (define at-end (= cur (sub1 (length dims))))
-  (cond
-    [(and failed jumped) (unbump dims cur)]
-    [(and failed at-end) (unbump dims cur)]
-    [failed (find-shape (bump (unbump dims cur) (add1 cur)) (add1 cur) #t)]
-    [else (find-shape (bump dims cur) cur #f)]))
       
 (define (bump l pos)
   (list-update l pos add1))
@@ -26,21 +7,16 @@
 (define (unbump l pos)
   (list-update l pos sub1))
 
-(define (metasearch)
-  (if (> (length dimensionality) 1)
-      (find-shape (bump dimensionality 0 #t) 0)
-      (display "zero interesting things found")))
-
-(metasearch)
-
-(define (combined-search dims cur jumped)
+(define (combined-search dims cur new-cur new-dim)
   (define failed (not (search dims)))
   (define at-end (= cur (sub1 (length dims))))
   (cond
-    [(and failed jumped) (unbump dims cur)]
-    [(and failed at-end) (combined-search ((make-list (add1 (length dims)) 2) dims) 0 #t)]
-    [failed (combined-search (bump (unbump dims cur) (add1 cur)) (add1 cur) #t)]
-    [else (combined-search (bump dims cur) cur #f)]))
+    [(and failed new-dim) (begin (displayln "failed after new dimension added.") (cdr dims))]
+    [(and failed at-end) (begin (displayln "got to end of dimension. adding new.") (combined-search (make-list (add1 (length dims)) 2) 0 #f #t))]
+    [failed (begin (displayln "failed on current. Moving to new dimension.") (combined-search (bump (unbump dims cur) (add1 cur)) (add1 cur) #t #f))]
+    [else (begin (displayln "succeeded. Adding to dimension.") (combined-search (bump dims cur) cur #f #f))]))
 
 (define (new-search)
-  (combined-search '(2 2) 0 #t))
+  (combined-search '(2 2) 0 #f #t))
+
+(new-search)
