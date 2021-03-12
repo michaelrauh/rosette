@@ -4,20 +4,37 @@
 (define (bump l pos)
   (list-update l pos add1))
 
-(define (unbump l pos)
-  (list-update l pos sub1))
+(define (at-end dims cur)
+  (= cur (sub1 (length dims))))
 
-(define (combined-search dims cur new-cur new-dim)
-  (define failed (not (search dims)))
-  (define at-end (= cur (sub1 (length dims))))
-  (cond
-    [(and failed new-dim) (begin (displayln "failed after new dimension added.") (cdr dims))]
-    [(and failed new-cur) (begin (displayln "failed after changing dimension. Skipping to add dimension") (combined-search (make-list (add1 (length dims)) 2) 0 #f #t))]
-    [(and failed at-end) (begin (displayln "got to end of dimension. adding new.") (combined-search (make-list (add1 (length dims)) 2) 0 #f #t))]
-    [failed (begin (displayln "failed on current. Moving to new dimension.") (combined-search (bump (unbump dims cur) (add1 cur)) (add1 cur) #t #f))]
-    [else (begin (displayln "succeeded. Adding to dimension.") (combined-search (bump dims cur) cur #f #f))]))
+(define (metasearch dims cur bootstrap) 
+  (if bootstrap
+      (check-if-safe dims cur)
+      (search-safe dims cur)))
 
-(define (new-search)
-  (combined-search '(2 2) 0 #f #t))
+(define (check-if-safe dims cur)
+  (if (search dims)
+      (search-safe dims cur)
+      (display "nothing interesting found")))
 
-(new-search)
+(define (search-safe dims cur)
+  (if (search (bump dims cur))
+      (search-safe (bump dims cur) cur)
+      (search-next-dimension dims cur)))
+
+(define (search-next-dimension dims cur)
+  (if (not (at-end dims cur))
+      (safe-search-next-dimension dims cur)
+      (add-dimension dims cur)))
+
+(define (safe-search-next-dimension dims cur)
+  (if (search (bump dims (add1 cur)))
+      (search-safe (bump dims (add1 cur)) (add1 cur))
+      (add-dimension dims cur)))
+
+(define (add-dimension dims cur)
+  (if (search (make-list (add1 (length dims)) 2))
+      (search-safe (make-list (add1 (length dims)) 2) 0)
+      (display "end of search")))
+
+(metasearch '(2 2) 0 #t)
