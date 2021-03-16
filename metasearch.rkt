@@ -101,3 +101,4 @@
 ; If the list of possibilities is empty, fail
 ; try each thing in the list. If it fails, go to the regular scheduler. If each thing works and you run out of stuff to do, go to the regular scheduler.
 ; regular scheduler: copy thing in last position in most recent success into new position at end of list. Generate possibilities and filter.
+; issue with regular schedular spec : fail on 4 4 generates 3 4 4 as barrier. That's wrong.
