@@ -80,7 +80,7 @@
 (define (build-plan barrier hist)
   (define candidates (make-candidates barrier (list (make-list (length barrier) 2))))
   (define filtered (filter-candidates candidates hist))
-  (remove-redundancies candidates))
+  (remove-redundancies filtered))
 
 (define (route hist)
   (define recent (car hist))
@@ -90,9 +90,9 @@
   (when (empty? plan) (display "done"))
   (search-plan plan hist))
 
-(trace search-plan)
+;(trace search-plan route-second-dimension)
 
-(metasearch)
+(metasearch) 
 ; check for 2 2 or fail
 ; increment first to failure
 ; route by taking the most recent success, copy the first to the second, and make a range iterating leftmost first until each digit is saturated.
