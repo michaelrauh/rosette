@@ -80,7 +80,7 @@
 (define (build-plan barrier hist)
   (define candidates (make-candidates barrier (list (make-list (length barrier) 2))))
   (define filtered (filter-candidates candidates hist))
-  (remove-redundancies filtered))
+  (reverse (remove-redundancies filtered)))
 
 (define (route hist)
   (define recent (car hist))
@@ -90,7 +90,7 @@
   (when (empty? plan) (display "done"))
   (search-plan plan hist))
 
-;(trace search-plan route-second-dimension)
+(trace build-plan)
 
 (metasearch) 
 ; check for 2 2 or fail
