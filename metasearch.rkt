@@ -73,12 +73,12 @@
   (define cur (car plan))
   (define search-result (search cur))
   (cond
-    [(and (not search-result) (all-twos cur))]
+    [(and (not search-result) (all-twos cur)) (display "done")]
     [(not search-result) (route hist)]
     [else (search-plan (cdr plan) (cons cur hist))]))
 
 (define (all-twos l)
-  (empty? (filter (λ (x) (= 2 x)) l)))
+  (empty? (filter (λ (x) (not (= 2 x))) l)))
 
 (define (build-plan barrier hist)
   (define candidates (make-candidates barrier (list (make-list (length barrier) 2))))
