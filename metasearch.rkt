@@ -73,14 +73,22 @@
 (define (search-plan plan hist)
   (when (empty? plan) (route hist))
   (define cur (car plan))
-  (if (search cur)
-      (search-plan (cdr plan) (cons cur hist))
-      (route hist)))
+  (define search-result (search cur))
+  (cond
+    [(and (not search-result) (all-twos cur))]
+    [(not search-result) (route hist)]
+    [else (search-plan (cdr plan) (cons cur hist))]))
+
+(define (all-twos l)
+  (empty? (filter (λ (x) (= 2 x)) l)))
 
 (define (build-plan barrier hist)
   (define candidates (make-candidates barrier (list (make-list (length barrier) 2))))
   (define filtered (filter-candidates candidates hist))
-  (reverse (remove-redundancies filtered)))
+  (reverse (remove-redundancies filtered))) ; order is still wrong. Remove reverse and reverse cons. 
+
+;>(build-plan '(6 6) '((6 2) (5 2) (4 2) (3 2) (2 2)))
+;<'((3 3) (3 4) (4 4) (3 5) (4 5) (5 5) (3 6) (4 6) (5 6) (6 6))
 
 (define (route hist)
   (define recent (car hist))
@@ -101,4 +109,3 @@
 ; If the list of possibilities is empty, fail
 ; try each thing in the list. If it fails, go to the regular scheduler. If each thing works and you run out of stuff to do, go to the regular scheduler.
 ; regular scheduler: copy thing in last position in most recent success into new position at end of list. Generate possibilities and filter.
-; issue with regular schedular spec : fail on 4 4 generates 3 4 4 as barrier. That's wrong.
