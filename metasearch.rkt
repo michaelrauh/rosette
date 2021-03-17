@@ -1,7 +1,5 @@
 #lang racket
 (require "search.rkt")
-(require racket/trace)
-
 
 (define (bump l pos)
   (list-update l pos add1))
@@ -85,10 +83,7 @@
 (define (build-plan barrier hist)
   (define candidates (make-candidates barrier (list (make-list (length barrier) 2))))
   (define filtered (filter-candidates candidates hist))
-  (reverse (remove-redundancies filtered))) ; order is still wrong. Remove reverse and reverse cons. 
-
-;>(build-plan '(6 6) '((6 2) (5 2) (4 2) (3 2) (2 2)))
-;<'((3 3) (3 4) (4 4) (3 5) (4 5) (5 5) (3 6) (4 6) (5 6) (6 6))
+  (map reverse (reverse (remove-redundancies filtered))))
 
 (define (route hist)
   (define recent (car hist))
@@ -98,14 +93,4 @@
   (when (empty? plan) (display "done"))
   (search-plan plan hist))
 
-(trace build-plan)
-
 (metasearch) 
-; check for 2 2 or fail
-; increment first to failure
-; route by taking the most recent success, copy the first to the second, and make a range iterating leftmost first until each digit is saturated.
-; filter out anything that is already explored
-; filter out anything redundant down-list
-; If the list of possibilities is empty, fail
-; try each thing in the list. If it fails, go to the regular scheduler. If each thing works and you run out of stuff to do, go to the regular scheduler.
-; regular scheduler: copy thing in last position in most recent success into new position at end of list. Generate possibilities and filter.
